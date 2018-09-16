@@ -11,14 +11,22 @@ module.exports = {
     announceForAccessibility,
     focusOnView(ref) {
         if(!ref) {
-            console.warn("ref is null")
-            return
+            throw new Error('ref is not defined')
         }
+        
         const reactTag = findNodeHandle(ref)
  
-        Platform.OS === 'android' ? UIManager.sendAccessibilityEvent(
-            reactTag,
-            FOCUS_ON_VIEW
-        ) : AccessibilityInfo.setAccessibilityFocus(reactTag)
+        if (!reactTag) {
+            throw new Error('native node handle was not found for ref')
+        }
+        
+        // for default focus screen on componentDidMount
+        setTimeout(() => {
+            Platform.OS === 'android' ? UIManager.sendAccessibilityEvent(
+                reactTag,
+                FOCUS_ON_VIEW
+            ) : AccessibilityInfo.setAccessibilityFocus(reactTag)
+        }, 10)
+        
     }
 }
